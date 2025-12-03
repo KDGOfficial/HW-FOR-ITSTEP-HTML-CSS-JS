@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hytale Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        .content-area {
+            padding: 20px;
+            background: #181b21;
+            flex-grow: 1;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #0a0c10;
+            border: 2px solid #2b303b;
+            color: var(--hytale-green);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            border-radius: 2px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--hytale-blue);
+            box-shadow: 0 0 5px rgba(0, 112, 221, 0.5);
+        }
+        
+        .result {
+            background: #0a0c10;
+            border: 2px solid #2b303b;
+            color: var(--hytale-gold);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 2px;
+            min-height: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .full-width {
+            width: 100%;
+        }
+        
+        .burger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            cursor: pointer;
+            background: var(--hytale-dark);
+            border: 2px solid var(--hytale-border);
+            border-radius: 4px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .burger-icon {
+            font-size: 24px;
+            color: var(--hytale-gold);
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+        }
+        
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: var(--hytale-dark);
+            border-right: 4px solid var(--hytale-border);
+            z-index: 999;
+            transition: 0.3s;
+            padding-top: 70px;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.7);
+        }
+        
+        .nav-menu.active {
+            left: 0;
+        }
+        
+        .nav-menu a {
+            display: block;
+            color: var(--hytale-light);
+            padding: 15px 25px;
+            text-decoration: none;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--hytale-border);
+            transition: all 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            background: var(--hytale-blue);
+            color: white;
+            padding-left: 30px;
+        }
+        
+        .overlay-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 998;
+            backdrop-filter: blur(3px);
+        }
+        
+        .overlay-menu.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 20px 10px;
+                margin-top: 60px;
+            }
+            
+            .main-title h1 {
+                font-size: 2rem;
+                margin: 20px 0;
+            }
+            
+            .nav-menu {
+                width: 250px;
+                left: -250px;
+            }
+
+            .form-input {
+                font-size: 0.7rem;
+                padding: 10px;
+            }
+
+            .panel {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .panel-header {
+                font-size: 1.2rem;
+                padding: 8px;
+            }
+
+            .content-area {
+                padding: 15px 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .burger-menu {
+                top: 10px;
+                left: 10px;
+                padding: 3px 8px;
+            }
+
+            .burger-icon {
+                font-size: 20px;
+            }
+
+            .main-title h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    
+    <div class="burger-menu" id="burger-menu">
+        <div class="burger-icon">☰</div>
+    </div>
+    <nav class="nav-menu" id="nav-menu">
+        <a href="#calculator">Калькулятор</a>
+        <a href="#drink">Напитки</a>
+        <a href="#month">Календарь</a>
+    </nav>
+    <div class="overlay-menu" id="overlay-menu"></div>
+
+    <div class="container">
+        <div class="main-title">
+            <h1>Hytale Tools</h1>
+        </div>
+        
+        <div class="panel" id="calculator">
+            <div class="panel-header">Калькулятор</div>
+            <div class="content-area">
+                <select id="operation" class="form-input">
+                    <option value="+">Сложение (+)</option>
+                    <option value="-">Вычитание (-)</option>
+                    <option value="*">Умножение (×)</option>
+                    <option value="/">Деление (÷)</option>
+                </select>
+                <input type="number" id="num1" class="form-input" placeholder="Первое число" step="any">
+                <input type="number" id="num2" class="form-input" placeholder="Второе число" step="any">
+                <button class="btn action-btn full-width" onclick="calculate()">Вычислить</button>
+                <div class="result" id="calculator-result"></div>
+            </div>
+        </div>
+
+        <div class="panel" id="drink">
+            <div class="panel-header">Выбор напитка</div>
+            <div class="content-area">
+                <select id="drink-type" class="form-input" onchange="showDrinkPrice()">
+                    <option value="">-- Выберите напиток --</option>
+                    <option value="кофе">☕ Кофе</option>
+                    <option value="чай">🍵 Чай</option>
+                    <option value="сок">🧃 Сок</option>
+                </select>
+                <div class="result" id="drink-result"></div>
+            </div>
+        </div>
+
+        <div class="panel" id="month">
+            <div class="panel-header">Календарь</div>
+            <div class="content-area">
+                <input type="number" id="month-number" class="form-input" min="1" max="12" placeholder="Номер месяца (1-12)">
+                <button class="btn action-btn full-width" onclick="showMonthInfo()">Показать информацию</button>
+                <div class="result" id="month-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
+            const operation = document.getElementById('operation').value;
+            let result;
+
+            if (isNaN(num1) || isNaN(num2)) {
+                document.getElementById('calculator-result').textContent = 'Введите оба числа';
+                return;
+            }
+
+            switch (operation) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    if (num2 === 0) {
+                        document.getElementById('calculator-result').textContent = 'Ошибка: деление на ноль';
+                        return;
+                    }
+                    result = num1 / num2;
+                    result = parseFloat(result.toFixed(8));
+                    break;
+                default:
+                    result = 'Неизвестная операция';
+            }
+
+            document.getElementById('calculator-result').textContent = `= ${result}`;
+        }
+
+        function showDrinkPrice() {
+            const drink = document.getElementById('drink-type').value;
+            let price, emoji;
+
+            switch (drink) {
+                case 'кофе':
+                    price = '250 ₽';
+                    emoji = '☕';
+                    break;
+                case 'чай':
+                    price = '150 ₽';
+                    emoji = '🍵';
+                    break;
+                case 'сок':
+                    price = '200 ₽';
+                    emoji = '🧃';
+                    break;
+                default:
+                    document.getElementById('drink-result').textContent = '';
+                    return;
+            }
+
+            document.getElementById('drink-result').innerHTML = `
+                <div>${emoji} ${drink.charAt(0).toUpperCase() + drink.slice(1)}</div>
+                <div style="color: var(--hytale-gold); margin-top: 5px;">${price}</div>
+            `;
+        }
+
+        function showMonthInfo() {
+            const monthNumber = parseInt(document.getElementById('month-number').value);
+            let monthName, days, season;
+
+            if (monthNumber < 1 || monthNumber > 12) {
+                document.getElementById('month-result').textContent = 'Введите число от 1 до 12';
+                return;
+            }
+
+            switch (monthNumber) {
+                case 1: monthName = 'Январь'; days = 31; season = '❄️ Зима'; break;
+                case 2: monthName = 'Февраль'; days = '28 или 29'; season = '❄️ Зима'; break;
+                case 3: monthName = 'Март'; days = 31; season = '🌱 Весна'; break;
+                case 4: monthName = 'Апрель'; days = 30; season = '🌸 Весна'; break;
+                case 5: monthName = 'Май'; days = 31; season = '🌷 Весна'; break;
+                case 6: monthName = 'Июнь'; days = 30; season = '☀️ Лето'; break;
+                case 7: monthName = 'Июль'; days = 31; season = '🌞 Лето'; break;
+                case 8: monthName = 'Август'; days = 31; season = '🍉 Лето'; break;
+                case 9: monthName = 'Сентябрь'; days = 30; season = '🍁 Осень'; break;
+                case 10: monthName = 'Октябрь'; days = 31; season = '🍂 Осень'; break;
+                case 11: monthName = 'Ноябрь'; days = 30; season = '🌧️ Осень'; break;
+                case 12: monthName = 'Декабрь'; days = 31; season = '🎄 Зима'; break;
+            }
+
+            document.getElementById('month-result').innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <div style="font-size: 1.2em; color: var(--hytale-blue);">${monthName}</div>
+                    <div>${season}</div>
+                </div>
+                <div>Дней в месяце: <span style="color: var(--hytale-gold);">${days}</span></div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const burgerMenu = document.getElementById('burger-menu');
+            const navMenu = document.getElementById('nav-menu');
+            const overlayMenu = document.getElementById('overlay-menu');
+
+            burgerMenu.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                overlayMenu.classList.toggle('active');
+                document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+            });
+
+            overlayMenu.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                overlayMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navMenu.classList.remove('active');
+                    overlayMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    navMenu.classList.remove('active');
+                    overlayMenu.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
